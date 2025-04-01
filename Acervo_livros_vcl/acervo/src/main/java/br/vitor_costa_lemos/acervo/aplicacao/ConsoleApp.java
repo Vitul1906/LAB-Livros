@@ -1,7 +1,5 @@
 package br.vitor_costa_lemos.acervo.aplicacao;
 
-// Aluno: Vitor Costa Lemos / RA = 10438932
-
 import br.vitor_costa_lemos.acervo.entidade.Livro;
 import br.vitor_costa_lemos.acervo.repositorio.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +13,20 @@ public class ConsoleApp {
 
     @Autowired
     private LivroRepository livroRepository;
-    
+
     private final Scanner scanner = new Scanner(System.in);
 
     public void iniciar() {
-        int opcao;
-        do {
-            exibirMenu();
-            opcao = obterOpcaoUsuario();
-            processarOpcao(opcao);
-        } while (opcao != 0);
+        try {
+            int opcao;
+            do {
+                exibirMenu();
+                opcao = obterOpcaoUsuario();
+                processarOpcao(opcao);
+            } while (opcao != 0);
+        } finally {
+            scanner.close(); // Fechando o scanner no final para evitar vazamentos de recursos
+        }
     }
 
     private void exibirMenu() {
@@ -70,6 +72,12 @@ public class ConsoleApp {
         int ano = obterInteiro();
         System.out.print("Editora: ");
         String editora = scanner.nextLine();
+
+        // Validação de campos obrigatórios
+        if (titulo.isBlank() || autor.isBlank()) {
+            System.out.println("Título e autor são obrigatórios.");
+            return;
+        }
 
         if (livroRepository.existsByTituloIgnoreCaseAndAutorIgnoreCase(titulo, autor)) {
             System.out.println("Livro já cadastrado.");
